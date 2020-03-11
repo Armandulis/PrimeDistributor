@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PrimeAPI2.Repository;
+using PrimeAPI.Repository;
 
-namespace PrimeAPI2.Controllers
+namespace PrimeAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class PrimeController : ControllerBase
     {
+
         private PrimesRepo _pr;
         public PrimeController()
         {

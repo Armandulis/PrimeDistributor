@@ -1,14 +1,12 @@
-﻿using PrimeAPI2.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PrimeAPI2.Repository
+namespace PrimeAPI.Repository
 {
-    public class PrimesRepo : IPrimesRepository
+    public class PrimesRepo
     {
-
         public int GetPrimesSum(int primes)
         {
             return 5;
