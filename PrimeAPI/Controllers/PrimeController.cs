@@ -12,6 +12,8 @@ namespace PrimeAPI.Controllers
     [ApiController]
     public class PrimeController : ControllerBase
     {
+        Random random = new Random();
+        int isDown;
 
         private PrimesRepo _pr;
         public PrimeController()
@@ -21,10 +23,33 @@ namespace PrimeAPI.Controllers
         }
 
         // GET api/values/12
-        [HttpGet("{id}")]
-        public ActionResult<bool> Get(int id)
+        [HttpGet("{number}")]
+        public ActionResult<bool> Get(int number)
         {
-            return _pr.IsPrime(id);
+            // One out of 4 times the server will be down
+            // 0 means the server is down.
+            // 1 means the server is up.
+            isDown = random.Next(3);
+
+            if (isDown == 0)
+                return NotFound();
+            else
+                return Ok(_pr.IsPrime(number));
+        }
+
+        // GET api/values/12
+        [HttpPost("{number}")]
+        public ActionResult<int> Post(int number)
+        {
+            // One out of 4 times the server will be down
+            // 0 means the server is down.
+            // 1 means the server is up.
+            isDown = random.Next(3);
+
+            if (isDown == 0)
+                return NotFound();
+            else
+                return Ok(_pr.GetPrimesSum(number));
         }
 
     }

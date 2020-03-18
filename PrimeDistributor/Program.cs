@@ -1,4 +1,5 @@
 ﻿using Nancy.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,10 @@ namespace PrimeDistributor
         static void Main(string[] args)
         {
 
+            // List of out APIs
             string[] primesQueue = {
-                  "http://localhost:44314/api/prime",
-                  "http://localhost:44344/api/prime"
+                  "https://localhost:44314/api/prime",
+                  "https://localhost:44344/api/prime"
                    };
 
             int iPrimesQue = 0;
@@ -25,7 +27,9 @@ namespace PrimeDistributor
             {
                 Console.Write("Enter a number: ");
                 input = Console.ReadLine();
+                input = input.Trim();
 
+                // Validate user's input
                 if (CheckInputForNumbers(input))
                 {
                     int userNumber = int.Parse(input);
@@ -35,22 +39,19 @@ namespace PrimeDistributor
 
                     input = Console.ReadLine();
 
-                    Console.WriteLine(input);
                     if (input.Equals("1"))
                     {
-
-                        Console.WriteLine("Thanos did nothing wrong");
                         try
                         {
+                            // Get spesific API from que and reset if it reached limit
                             if (iPrimesQue >= 2) iPrimesQue = 0;
-
-                            Console.WriteLine("I used stones to destroy stones");
                             IsNumberAPrime(primesQueue[iPrimesQue], userNumber);
                         }
                         catch
                         {
                             Console.WriteLine("The server is down, requesting the next server...");
 
+                            // Add one to que and reset que if it reache limit
                             iPrimesQue += 1;
                             if (iPrimesQue >= 2) iPrimesQue = 0;
                             IsNumberAPrime(primesQueue[iPrimesQue], userNumber);
@@ -58,18 +59,34 @@ namespace PrimeDistributor
                         Console.WriteLine("APiUrl: " + primesQueue[iPrimesQue] + "APiNumber: " + (iPrimesQue + 1));
                         iPrimesQue += 1;
                     }
-                    /*
                     if (input.Equals("2"))
                     {
-                        AddPrimes(userNumber);
-                    }*/
+                        try
+                        {
+                            // Get spesific API from que and reset if it reached limit
+                            if (iPrimesQue >= 2) iPrimesQue = 0;
+                            AddPrimes(primesQueue[iPrimesQue], userNumber);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("The server is down, requesting the next server...");
+
+                            // Add one to que and reset que if it reache limit
+                            iPrimesQue += 1;
+                            if (iPrimesQue >= 2) iPrimesQue = 0;
+                            AddPrimes(primesQueue[iPrimesQue], userNumber);
+                        }
+                        Console.WriteLine("APiUrl: " + primesQueue[iPrimesQue] + "APiNumber: " + (iPrimesQue + 1));
+                        iPrimesQue += 1;
+                    }
                 }
             }
         }
 
         public static bool CheckInputForNumbers(string input)
         {
-            return input.All(c => c >= '0' && c <= '9');
+            // Simply checks if user placed a valid number
+            return input.All(c => c >= '0' && c <= '9' && !c.Equals(""));
         }
 
 
@@ -77,18 +94,15 @@ namespace PrimeDistributor
         {
             if (!string.IsNullOrEmpty(apiUrl))
             {
-                Console.WriteLine("Setting up client");
+                // Set up out API request
                 WebClient client = new WebClient();
-                client.Headers["Content-type"] = "application/json";
+                client.Headers[HttpRequestHeader.ContentType] = "application/json";
                 client.Encoding = Encoding.UTF8;
-
-                Console.WriteLine(apiUrl + "/" + number);
                 var json = client.DownloadData(apiUrl + "/" + number);
-                Console.WriteLine("something went wrong spiderman");
+
                 if (json != null)
                 {
-
-                    Console.WriteLine("Responded");
+                    // Extract data from response
                     string download = Encoding.ASCII.GetString(json);
                     bool isPrime = (new JavaScriptSerializer()).Deserialize<bool>(download);
                     if (isPrime)
@@ -102,15 +116,31 @@ namespace PrimeDistributor
                 }
                 else
                     Console.WriteLine("Something went wrong, please try again later");
+
             }
-
-            Console.WriteLine("after if in IsNumberAPrime");
-
         }
 
-        public static void AddPrimes(string queue, int number)
+        public static void AddPrimes(string apiUrl, int number)
         {
+            if (!string.IsNullOrEmpty(apiUrl))
+            {
+                // Set up out API request
+                WebClient client = new WebClient();
+                client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                var json = client.UploadString(apiUrl + "/" + number, WebRequestMethods.Http.Post, JsonConvert.SerializeObject(number));
 
+                if (json != null)
+                {
+                    // Extract data from response
+                    int primeSum = (new JavaScriptSerializer()).Deserialize<int>(json);
+
+                    Console.WriteLine("Your number primes sum is: " + primeSum);
+
+                }
+                else
+                    Console.WriteLine("Something went wrong, please try again later");
+
+            }
         }
     }
 }
