@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -99,7 +100,14 @@ namespace PrimeDistributor
                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                 client.Encoding = Encoding.UTF8;
                 var json = client.DownloadData(apiUrl + "/" + number);
-
+                var result = json;
+                string path = @"monitordata.txt";
+                using (StreamWriter writer = File.AppendText(path))
+                {
+                    writer.WriteLine(result);
+                    writer.Flush();
+                }
+                
                 if (json != null)
                 {
                     // Extract data from response
@@ -116,6 +124,7 @@ namespace PrimeDistributor
                 }
                 else
                     Console.WriteLine("Something went wrong, please try again later");
+
 
             }
         }
