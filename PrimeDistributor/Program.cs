@@ -33,6 +33,7 @@ namespace PrimeDistributor
                 // Validate user's input
                 if (CheckInputForNumbers(input))
                 {
+
                     int userNumber = int.Parse(input);
 
                     Console.WriteLine("Enter 1 if you want to find out if your number is a prime");
@@ -46,6 +47,7 @@ namespace PrimeDistributor
                         {
                             // Get spesific API from que and reset if it reached limit
                             if (iPrimesQue >= 2) iPrimesQue = 0;
+                            LogData("User placed number: " + input + ", trying to connect to primesQueue: " + iPrimesQue + " at " + primesQueue[iPrimesQue]);
                             IsNumberAPrime(primesQueue[iPrimesQue], userNumber);
                         }
                         catch
@@ -55,6 +57,7 @@ namespace PrimeDistributor
                             // Add one to que and reset que if it reache limit
                             iPrimesQue += 1;
                             if (iPrimesQue >= 2) iPrimesQue = 0;
+                            LogData("User placed number: " + input + ", trying to connect to primesQueue: " + iPrimesQue + " at " + primesQueue[iPrimesQue]);
                             IsNumberAPrime(primesQueue[iPrimesQue], userNumber);
                         }
                         Console.WriteLine("APiUrl: " + primesQueue[iPrimesQue] + "APiNumber: " + (iPrimesQue + 1));
@@ -66,6 +69,8 @@ namespace PrimeDistributor
                         {
                             // Get spesific API from que and reset if it reached limit
                             if (iPrimesQue >= 2) iPrimesQue = 0;
+                            LogData("User placed number: " + input + ", trying to connect to primesQueue: " + iPrimesQue + " at " + primesQueue[iPrimesQue]);
+
                             AddPrimes(primesQueue[iPrimesQue], userNumber);
                         }
                         catch
@@ -75,6 +80,8 @@ namespace PrimeDistributor
                             // Add one to que and reset que if it reache limit
                             iPrimesQue += 1;
                             if (iPrimesQue >= 2) iPrimesQue = 0;
+                            LogData("User placed number: " + input + ", trying to connect to primesQueue: " + iPrimesQue + " at " + primesQueue[iPrimesQue]);
+
                             AddPrimes(primesQueue[iPrimesQue], userNumber);
                         }
                         Console.WriteLine("APiUrl: " + primesQueue[iPrimesQue] + "APiNumber: " + (iPrimesQue + 1));
@@ -95,19 +102,15 @@ namespace PrimeDistributor
         {
             if (!string.IsNullOrEmpty(apiUrl))
             {
+
                 // Set up out API request
                 WebClient client = new WebClient();
                 client.Headers[HttpRequestHeader.ContentType] = "application/json";
                 client.Encoding = Encoding.UTF8;
                 var json = client.DownloadData(apiUrl + "/" + number);
+
                 var result = json;
-                string path = @"monitordata.txt";
-                using (StreamWriter writer = File.AppendText(path))
-                {
-                    writer.WriteLine(result);
-                    writer.Flush();
-                }
-                
+
                 if (json != null)
                 {
                     // Extract data from response
@@ -116,14 +119,21 @@ namespace PrimeDistributor
                     if (isPrime)
                     {
                         Console.WriteLine("Your number is indeed a prime! :)");
+                        LogData("Successfully responded to user with answer that the a number is a prime");
+
                     }
                     else
                     {
                         Console.WriteLine("Your number is not a prime :(");
+                        LogData("Successfully responded to user with answer that the a number is not a prime");
                     }
                 }
                 else
+                {
+
                     Console.WriteLine("Something went wrong, please try again later");
+                    LogData("Something went wrong while checking if a number is a prime");
+                }
 
 
             }
@@ -143,12 +153,30 @@ namespace PrimeDistributor
                     // Extract data from response
                     int primeSum = (new JavaScriptSerializer()).Deserialize<int>(json);
 
+                    LogData("User got a response that user's prime sum is: " + primeSum);
                     Console.WriteLine("Your number primes sum is: " + primeSum);
 
                 }
                 else
+                {
                     Console.WriteLine("Something went wrong, please try again later");
+                    LogData("Something went wrong while calculating primes sum");
+                }
 
+            }
+        }
+
+        public static void LogData(string data)
+        {
+            DateTime date = new DateTime();
+            string currentDate = date.Date.ToShortDateString();
+
+            string path = @"monitordata.txt";
+            using (StreamWriter writer = File.AppendText(path))
+            {
+                writer.WriteLine(currentDate + " Action: ");
+                writer.WriteLine(data);
+                writer.Flush();
             }
         }
     }
