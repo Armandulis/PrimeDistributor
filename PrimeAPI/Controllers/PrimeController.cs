@@ -28,7 +28,7 @@ namespace PrimeAPI.Controllers
         {
             // One out of 4 times the server will be down
             // 0 means the server is down.
-            // 1 means the server is up.
+            // Else means the server is up.
             isDown = random.Next(3);
 
             if (isDown == 0)
@@ -43,7 +43,7 @@ namespace PrimeAPI.Controllers
         {
             // One out of 4 times the server will be down
             // 0 means the server is down.
-            // 1 means the server is up.
+            // Else means the server is up.
             isDown = random.Next(3);
 
             if (isDown == 0)

@@ -20,7 +20,7 @@ namespace PrimeDistributor
                   "https://localhost:44314/api/prime",
                   "https://localhost:44344/api/prime"
                    };
-
+            // Queue number
             int iPrimesQue = 0;
             string input = "Booting primes";
 
@@ -94,7 +94,7 @@ namespace PrimeDistributor
         public static bool CheckInputForNumbers(string input)
         {
             // Simply checks if user placed a valid number
-            return input.All(c => c >= '0' && c <= '9' && !c.Equals(""));
+            return input.All(c => c >= '0' && c <= '9') && !string.IsNullOrEmpty(input);
         }
 
 

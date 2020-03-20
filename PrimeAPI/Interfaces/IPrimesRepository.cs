@@ -8,7 +8,6 @@ namespace PrimeAPI.Interfaces
     interface IPrimesRepository
     {
         int GetPrimesSum(int primes);
-
         bool IsPrime(int number);
     }
 }
